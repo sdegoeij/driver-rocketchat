@@ -27,7 +27,7 @@
   },
   "autoload": {
     "psr-4": {
-      "OneShoe\\BotMan\\Drivers\\RocketChat\\": "src/"
+      "BotMan\\Drivers\\RocketChat\\": "src/"
     }
   },
   "autoload-dev": {

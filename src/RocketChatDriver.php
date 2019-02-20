@@ -17,7 +17,7 @@ use BotMan\BotMan\Messages\Incoming\Answer;
  * @property string $errorMessage
  * @property int $replyStatusCode
  *
- * @package OneShoe\BotMan\Drivers\RocketChat
+ * @package BotMan\Drivers\RocketChat
  */
 class RocketChatDriver extends HttpDriver {
 

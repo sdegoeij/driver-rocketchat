@@ -4,6 +4,11 @@ namespace BotMan\Drivers\RocketChat;
 
 use GuzzleHttp\Client;
 
+/**
+ * Class RocketChatAuthentication
+ *
+ * @package BotMan\Drivers\RocketChat
+ */
 class RocketChatAuthentication {
 
   /**

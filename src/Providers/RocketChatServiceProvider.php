@@ -10,7 +10,7 @@ use BotMan\Studio\Providers\StudioServiceProvider;
 /**
  * Class RocketChatServiceProvider.
  *
- * @package OneShoe\BotMan\Drivers\RocketChat\Providers
+ * @package BotMan\Drivers\RocketChat\Providers
  */
 class RocketChatServiceProvider extends ServiceProvider {
 

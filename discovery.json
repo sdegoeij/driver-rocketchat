@@ -3,6 +3,6 @@
     "stubs/rocketchat.php"
   ],
   "botman/driver": [
-    "OneShoe\\BotMan\\Drivers\\RocketChat\\RocketChatDriver"
+    "BotMan\\Drivers\\RocketChat\\RocketChatDriver"
   ]
 }

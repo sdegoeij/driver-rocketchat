@@ -1,0 +1,46 @@
+{
+  "name": "sdegoeij/rocketchat-driver",
+  "license": "GPL",
+  "description": "Rocket.Chat driver for BotMan",
+  "keywords": [
+    "Bot",
+    "BotMan",
+    "Rocket.Chat"
+  ],
+  "homepage": "https://github.com/sdegoeij/rocketchat-driver",
+  "authors": [
+    {
+      "name": "Sander de Goeij",
+      "email": "sander.degoeij@oneshoe.nl"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "botman/botman": "~2.0"
+  },
+  "require-dev": {
+    "illuminate/support": "^5.7",
+    "guzzlehttp/guzzle": "^6.3",
+    "botman/studio-addons": "^1.4",
+    "ext-json": "*",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "OneShoe\\BotMan\\Drivers\\RocketChat\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "scripts": {
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "BotMan\\Drivers\\RocketChat\\Providers\\RocketChatServiceProvider"
+      ]
+    }
+  }
+}

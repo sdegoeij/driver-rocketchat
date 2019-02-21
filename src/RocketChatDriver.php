@@ -21,7 +21,6 @@ use BotMan\BotMan\Messages\Incoming\Answer;
  */
 class RocketChatDriver extends HttpDriver {
 
-  // @TODO: Implement login + caching of user_id and auth_token
   const DRIVER_NAME = 'RocketChat';
 
   /** @var array */
@@ -37,7 +36,7 @@ class RocketChatDriver extends HttpDriver {
     $this->payload = $request->request->all();
     $this->event = Collection::make($this->payload);
     $this->files = Collection::make($request->files->all());
-    $this->config = Collection::make($this->config->get('rocketchat', []));
+    $this->config = Collection::make($this->config->get('rocketchat'));
   }
 
   /**
@@ -130,6 +129,7 @@ class RocketChatDriver extends HttpDriver {
    * {@inheritdoc}
    */
   public function sendPayload($payload) {
+    $this->rocketChatLogin();
     $url = str_finish($this->config->get('endpoint'), '/') . 'api/v1/chat.postMessage';
     $response = $this->http->post($url, [], $payload, [
       'Content-Type: application/json',
@@ -137,6 +137,21 @@ class RocketChatDriver extends HttpDriver {
       'X-User-Id: ' . $this->config->get('auth')['user_id'],
     ], TRUE);
     return $response;
+  }
+
+  /**
+   * Login to Rocket.Chat.
+   */
+  private function rocketChatLogin() {
+    $auth = \Illuminate\Support\Facades\Cache::remember('rocketchat.auth', 60 * 24 * 30, function () {
+      return RocketChatAuthentication::getAuth(
+        config('botman.rocketchat.bot.username'),
+        config('botman.rocketchat.bot.password'),
+        config('botman.rocketchat.endpoint')
+      );
+    });
+
+    $this->config->put('auth', $auth);
   }
 
 }

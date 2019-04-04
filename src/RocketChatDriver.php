@@ -29,6 +29,9 @@ class RocketChatDriver extends HttpDriver {
   /** @var array */
   protected $files = [];
 
+  /** @var array */
+  protected $auth = [];
+
   /**
    * {@inheritdoc}
    */
@@ -37,22 +40,23 @@ class RocketChatDriver extends HttpDriver {
     $this->event = Collection::make($this->payload);
     $this->files = Collection::make($request->files->all());
     $this->config = Collection::make($this->config->get('rocketchat'));
+    $this->authenticate();
   }
 
   /**
-   * Verify that the request is valid agains the configured token
+   * Verify that the request is valid against the configured token.
    *
    * @return boolean
    */
   protected function isValidRequest() {
-    return !empty($this->config->get('token')) && ($this->event->get('token') == $this->config->get('token'));
+    return !empty($this->config->get('token')) && ($this->event->get('token') === $this->config->get('token'));
   }
 
   /**
    * {@inheritdoc}
    */
   public function matchesRequest() {
-    return !is_null($this->config->get('matchingKeys')) && Collection::make($this->config->get('matchingKeys'))
+    return $this->config->get('matchingKeys') !== NULL && Collection::make($this->config->get('matchingKeys'))
         ->diff($this->event->keys())
         ->isEmpty() && $this->isValidRequest();
   }
@@ -61,7 +65,18 @@ class RocketChatDriver extends HttpDriver {
    * {@inheritdoc}
    */
   public function isConfigured() {
-    return !empty($this->config->get('token')) && !empty($this->config->get('endpoint')) && !empty($this->config->get('matchingKeys'));
+    if (empty($this->config->get('token')) || empty($this->config->get('endpoint')) || empty($this->config->get('matchingKeys'))) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  public function authenticate() {
+    $this->auth = RocketChatAuthentication::getAuth(
+      $this->config->get('bot')['username'],
+      $this->config->get('bot')['password'],
+      $this->config->get('endpoint')
+    );
   }
 
   /**
@@ -111,7 +126,7 @@ class RocketChatDriver extends HttpDriver {
       $this->replyStatusCode = 500;
     }
     $payload = Collection::make($matchingMessage->getPayload());
-    if (is_null($payload->get('channel_name'))) {
+    if ($payload->get('channel_name') === NULL) {
       // Direct Message answer
       return [
         'text' => $message->getText(),
@@ -129,29 +144,13 @@ class RocketChatDriver extends HttpDriver {
    * {@inheritdoc}
    */
   public function sendPayload($payload) {
-    $this->rocketChatLogin();
     $url = str_finish($this->config->get('endpoint'), '/') . 'api/v1/chat.postMessage';
     $response = $this->http->post($url, [], $payload, [
       'Content-Type: application/json',
-      'X-Auth-Token: ' . $this->config->get('auth')['token'],
-      'X-User-Id: ' . $this->config->get('auth')['user_id'],
+      'X-Auth-Token: ' . $this->auth['token'],
+      'X-User-Id: ' . $this->auth['user_id'],
     ], TRUE);
     return $response;
-  }
-
-  /**
-   * Login to Rocket.Chat.
-   */
-  private function rocketChatLogin() {
-    $auth = \Illuminate\Support\Facades\Cache::remember('rocketchat.auth', 60 * 24 * 30, function () {
-      return RocketChatAuthentication::getAuth(
-        config('botman.rocketchat.bot.username'),
-        config('botman.rocketchat.bot.password'),
-        config('botman.rocketchat.endpoint')
-      );
-    });
-
-    $this->config->put('auth', $auth);
   }
 
 }

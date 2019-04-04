@@ -7,14 +7,14 @@ return [
    * The token specified when setting up the outgoing web hook
    * https://rocket.chat/docs/administrator-guides/integrations/
    */
-  'token' => '',
+  'token' => env('ROCKET_CHAT_WEBHOOK_TOKEN', ''),
 
   /**
    * Rocket.Chat Base URL
    *
    * The url your Rocket.Chat server answers to (used for API calls)
    */
-  'endpoint' => '',
+  'endpoint' => env('ROCKET_CHAT_ENDPOINT', ''),
 
   /**
    * The user ID of the bot (to avoid infinite loops)
@@ -40,7 +40,9 @@ return [
     'user_id',
     'user_name',
     'channel_id',
+    'channel_name',
     'text',
+    'token',
     'message_id',
     'timestamp',
     'bot',

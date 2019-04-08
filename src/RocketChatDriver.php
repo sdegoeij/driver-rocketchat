@@ -40,7 +40,10 @@ class RocketChatDriver extends HttpDriver {
     $this->event = Collection::make($this->payload);
     $this->files = Collection::make($request->files->all());
     $this->config = Collection::make($this->config->get('rocketchat'));
-    $this->authenticate();
+    // Don't authenticate for CLI requests. (eg, artisan).
+    if (php_sapi_name() !== 'cli') {
+      $this->authenticate();
+    }
   }
 
   /**
